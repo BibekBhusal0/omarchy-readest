@@ -2,6 +2,8 @@
 
 A beautiful [Readest](https://readest.com/) library search menu. Type to filter books by title or author with fuzzy ranking, and open one with Enter.
 
+![Readest preview](preview.png)
+
 ## Features
 
 - Fuzzy search across your library by title or author, ranked by relevance
@@ -57,6 +59,6 @@ Here are my other Omarchy plugins:
 
 - [Focusd](https://github.com/BibekBhusal0/omarchy-focusd) - pomodoro timer with streak, history and daily goal
 - [Obsidian Search](https://github.com/BibekBhusal0/omarchy-obsidian-search) - fuzzy-search your Obsidian vault
-- [yt-dlp](https://github.com/BibekBhusal0/omarchy-ytdl) - video downloads with progress and history
+- [Youtube Video Downloader](https://github.com/BibekBhusal0/omarchy-ytdl) - video downloads with progress and history
 
 Please give a star if you find them useful!
