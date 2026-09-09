@@ -18,7 +18,7 @@ Item {
   property bool cursorActive: false
   property var items: []
   property var allItems: []
-  property string searchScript: root.manifest && root.manifest.__sourceDir ? root.manifest.__sourceDir + "/search.sh" : ""
+  readonly property string searchScript: Qt.resolvedUrl("search.sh").toString().replace(/^file:\/\//, "")
   property string readestCmd: "readest"
 
   Component.onCompleted: {
@@ -78,28 +78,32 @@ Item {
     searchProc.serial = root.searchSerial;
     searchProc.collected = "";
     var args = [root.searchScript];
-    var libPath = root.pluginSetting("libraryPath");
+    var libPath = root.cfg("libraryPath", "");
     if (libPath)
       args.push(libPath);
     searchProc.command = args;
     searchProc.running = true;
   }
 
-  function pluginSetting(name) {
-    if (!root.shell || !root.shell.shellConfig)
-      return "";
-    var plugins = root.shell.shellConfig.plugins;
-    if (!Array.isArray(plugins))
-      return "";
-    var manifest = root.manifest;
-    var id = manifest && manifest.id ? manifest.id : "";
-    for (var i = 0; i < plugins.length; i++) {
-      if (plugins[i] && plugins[i].id === id) {
-        var value = plugins[i][name];
-        return value === undefined || value === null ? "" : String(value);
-      }
-    }
-    return "";
+  property var fileConfig: ({})
+  function parseFileConfig(raw) {
+    try {
+      var parsed = JSON.parse(String(raw || ""));
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : ({});
+    } catch (e) { return ({}); }
+  }
+  function cfg(name, fallback) {
+    var value = root.fileConfig ? root.fileConfig[name] : undefined;
+    return value === undefined || value === null ? fallback : value;
+  }
+  FileView {
+    id: configFile
+    path: Quickshell.env("HOME") + "/.config/omarchy/readest.json"
+    watchChanges: true
+    printErrors: false
+    onLoaded: root.fileConfig = root.parseFileConfig(text())
+    onFileChanged: configFile.reload()
+    onLoadFailed: root.fileConfig = ({})
   }
 
   function parseResults(raw) {
