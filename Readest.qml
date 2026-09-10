@@ -48,10 +48,8 @@ Item {
     root.selectedIndex = 0;
     root.cursorActive = true;
     root.disarmPointer();
-    if (!root.allItems.length)
-      root.runSearch();
-    else
-      root.filter();
+    root.filter();
+    root.runSearch();
     Qt.callLater(function () {
         keyCatcher.forceActiveFocus();
       });
@@ -90,7 +88,9 @@ Item {
     try {
       var parsed = JSON.parse(String(raw || ""));
       return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : ({});
-    } catch (e) { return ({}); }
+    } catch (e) {
+      return ({});
+    }
   }
   function cfg(name, fallback) {
     var value = root.fileConfig ? root.fileConfig[name] : undefined;
@@ -101,9 +101,23 @@ Item {
     path: Quickshell.env("HOME") + "/.config/omarchy/readest.json"
     watchChanges: true
     printErrors: false
-    onLoaded: root.fileConfig = root.parseFileConfig(text())
+    onLoaded: {
+      root.fileConfig = root.parseFileConfig(text());
+      root.onConfigChanged();
+    }
     onFileChanged: configFile.reload()
-    onLoadFailed: root.fileConfig = ({})
+    onLoadFailed: {
+      root.fileConfig = ({});
+      root.onConfigChanged();
+    }
+  }
+
+  // Re-lists with the new libraryPath once the config arrives or changes,
+  // and prewarms the cache at shell startup so the first open is instant.
+  // Cached rows stay visible until the fresh list lands.
+  function onConfigChanged() {
+    root.filter();
+    root.runSearch();
   }
 
   function parseResults(raw) {
@@ -305,10 +319,10 @@ Item {
           } else if (event.key === Qt.Key_Down) {
             root.select(1);
             event.accepted = true;
-          } else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_K) {
+          } else if ((event.modifiers & Qt.ControlModifier) && (event.key === Qt.Key_K || event.key === Qt.Key_P)) {
             root.select(-1);
             event.accepted = true;
-          } else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_J) {
+          } else if ((event.modifiers & Qt.ControlModifier) && (event.key === Qt.Key_J || event.key === Qt.Key_N)) {
             root.select(1);
             event.accepted = true;
           } else if (event.key === Qt.Key_PageUp) {

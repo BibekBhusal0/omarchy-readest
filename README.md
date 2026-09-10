@@ -13,7 +13,7 @@ A beautiful [Readest](https://readest.com/) library search menu. Type to filter 
 
 - Omarchy quattro
 - Readest
-- `fd` and `jq` (preinstalled on Omarchy)
+- `jq` (preinstalled on Omarchy)
 
 ## Install
 
@@ -29,7 +29,7 @@ Bind the menu to a key (`~/.config/hypr/bindings.lua`):
 o.bind("SUPER", "R", "exec, omarchy-shell shell summon bibek.readest")
 ```
 
-Type to filter, Enter opens the selected book in Readest, Escape closes. Move with Up/Down or Ctrl+K/Ctrl+J, jump with PageUp/PageDown.
+Type to filter, Enter opens the selected book in Readest, Escape closes. Move with Up/Down, Ctrl+K/Ctrl+J, or Ctrl+P/Ctrl+N, jump with PageUp/PageDown.
 
 ## Configuration
 
